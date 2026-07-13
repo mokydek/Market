@@ -1,3 +1,4 @@
+import { memo } from 'react'
 import { ExternalLink, Heart } from 'lucide-react'
 import type { ScoredOffer } from '@/shared/types/offer'
 import { useI18n } from '@/shared/i18n/I18nProvider'
@@ -19,7 +20,7 @@ type OfferCardProps = {
   onOpenDetail: (offer: ScoredOffer) => void
 }
 
-export function OfferCard({
+export const OfferCard = memo(function OfferCard({
   offer,
   isBestValue,
   isCheapest,
@@ -105,4 +106,4 @@ export function OfferCard({
       </div>
     </div>
   )
-}
+})

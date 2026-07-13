@@ -12,6 +12,7 @@ const SignUp = lazy(() => import('@/app/SignUp'))
 const Profile = lazy(() => import('@/app/Profile'))
 const History = lazy(() => import('@/app/History'))
 const Favorites = lazy(() => import('@/app/Favorites'))
+const NotFound = lazy(() => import('@/app/NotFound'))
 
 function RouteFallback() {
   return (
@@ -57,6 +58,7 @@ export default function App() {
               }
             />
           </Route>
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </Suspense>
     </BrowserRouter>
