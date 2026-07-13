@@ -49,6 +49,17 @@ const ru = {
   errorGeneric: 'Произошла ошибка. Попробуйте позже',
   marketplaceBlocked: 'Некоторые маркетплейсы временно недоступны',
   b2bBadge: 'Оптом',
+
+  // Landing
+  heroSubtext: 'Ищем товар на нескольких маркетплейсах и показываем лучшее по цене и качеству',
+  ctaStartSearch: 'Начать поиск',
+  feature1Title: 'Поиск по названию',
+  feature1Text: 'Один запрос, несколько маркетплейсов',
+  feature2Title: 'Поиск по фото',
+  feature2Text: 'Загрузите фото товара',
+  feature3Title: 'Рейтинг по выгоде',
+  feature3Text: 'Оценка по цене и качеству',
+  footerNote: 'Поиск лучших товаров на маркетплейсах',
 } as const
 
 export type TranslationKey = keyof typeof ru
@@ -87,6 +98,15 @@ export const translations = {
     errorGeneric: 'Something went wrong. Please try again later',
     marketplaceBlocked: 'Some marketplaces are temporarily unavailable',
     b2bBadge: 'Wholesale',
+    heroSubtext: 'We search several marketplaces and show the best by price and quality',
+    ctaStartSearch: 'Start search',
+    feature1Title: 'Search by name',
+    feature1Text: 'One query, many marketplaces',
+    feature2Title: 'Search by photo',
+    feature2Text: 'Upload a product photo',
+    feature3Title: 'Ranked by value',
+    feature3Text: 'Scored by price and quality',
+    footerNote: 'Find the best products across marketplaces',
   },
   kk: {
     appName: 'Market',
@@ -120,5 +140,14 @@ export const translations = {
     errorGeneric: 'Қате пайда болды. Кейінірек қайталап көріңіз',
     marketplaceBlocked: 'Кейбір маркетплейстер уақытша қолжетімсіз',
     b2bBadge: 'Көтерме',
+    heroSubtext: 'Бірнеше маркетплейстен тауар іздеп, баға мен сапа бойынша үздігін көрсетеміз',
+    ctaStartSearch: 'Іздеуді бастау',
+    feature1Title: 'Атауы бойынша іздеу',
+    feature1Text: 'Бір сұраныс, бірнеше маркетплейс',
+    feature2Title: 'Фото бойынша іздеу',
+    feature2Text: 'Тауар суретін жүктеңіз',
+    feature3Title: 'Тиімділік бойынша рейтинг',
+    feature3Text: 'Баға мен сапа бойынша бағалау',
+    footerNote: 'Маркетплейстердегі үздік тауарларды табу',
   },
 } satisfies Record<Lang, Record<TranslationKey, string>>
