@@ -10,13 +10,24 @@ export const RATING_CONFIDENCE_K = 20
 export function scoreOffers(offers: Offer[]): ScoredOffer[] {
   if (offers.length === 0) return []
 
-  const prices = offers.map((o) => o.price).filter((p) => p > 0)
-  const minPrice = prices.length > 0 ? Math.min(...prices) : 0
+  // Cheapest price per currency. Offers in different currencies (KZT retail vs
+  // USD wholesale) must not share one minimum, or the dollar amounts would
+  // always look cheaper and unfairly win the price score.
+  const minByCurrency = new Map<string, number>()
+  for (const o of offers) {
+    if (o.price > 0) {
+      const current = minByCurrency.get(o.currency)
+      if (current === undefined || o.price < current) {
+        minByCurrency.set(o.currency, o.price)
+      }
+    }
+  }
 
   const scored: ScoredOffer[] = offers.map((offer) => {
     const ratingConfidence =
       offer.reviewCount / (offer.reviewCount + RATING_CONFIDENCE_K)
     const qualityScore = ((offer.rating ?? 0) / 5) * ratingConfidence
+    const minPrice = minByCurrency.get(offer.currency) ?? 0
     const priceScore =
       offer.price > 0 && minPrice > 0 ? minPrice / offer.price : 0
     const valueScore =

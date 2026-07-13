@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useI18n } from '@/shared/i18n/I18nProvider'
+import { useAuth } from '@/shared/auth/AuthProvider'
 import { supabase } from '@/shared/lib/supabase'
 import type { ScoredOffer } from '@/shared/types/offer'
 import { SearchBar } from '@/app/SearchBar'
@@ -13,22 +14,23 @@ type Status = 'idle' | 'loading' | 'done' | 'error'
 
 export default function AppHome() {
   const { t, lang } = useI18n()
-  const [searchParams] = useSearchParams()
-  const initialQuery = searchParams.get('q') ?? ''
+  const { user } = useAuth()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const q = searchParams.get('q') ?? ''
+  const src = searchParams.get('src') === 'photo' ? 'photo' : 'text'
 
   const [status, setStatus] = useState<Status>('idle')
-  const [query, setQuery] = useState('')
   const [errorText, setErrorText] = useState('')
   const [offers, setOffers] = useState<ScoredOffer[]>([])
   const [blocked, setBlocked] = useState<string[]>([])
   const [selected, setSelected] = useState<ScoredOffer | null>(null)
 
   const runSearch = useCallback(
-    async (nextQuery: string, source: 'text' | 'photo' = 'text') => {
+    async (query: string, source: 'text' | 'photo') => {
+      setSelected(null)
       setStatus('loading')
-      setQuery(nextQuery)
       const { data, error } = await supabase.functions.invoke('search', {
-        body: { query: nextQuery, lang, source },
+        body: { query, lang, source },
       })
       if (error || !data) {
         setErrorText(t('errorGeneric'))
@@ -46,10 +48,12 @@ export default function AppHome() {
     [lang, t],
   )
 
-  // Rerun a search arriving from history (/app?q=...).
+  // The URL query is the single source of truth: typed searches, history reruns
+  // and photo searches all write it, and this effect runs the search (and re
+  // runs it when the language changes so results match the active language).
   useEffect(() => {
-    if (initialQuery) void runSearch(initialQuery)
-  }, [initialQuery, runSearch])
+    if (q) void runSearch(q, src)
+  }, [q, src, runSearch])
 
   const minPrice =
     offers.length > 0
@@ -61,20 +65,22 @@ export default function AppHome() {
       <div className="flex items-center gap-2">
         <div className="flex-1">
           <SearchBar
-            key={initialQuery}
-            initialValue={initialQuery}
-            onSearch={runSearch}
+            key={q}
+            initialValue={q}
+            onSearch={(query) => setSearchParams({ q: query })}
             disabled={status === 'loading'}
           />
         </div>
-        <PhotoButton
-          onQuery={(q) => void runSearch(q, 'photo')}
-          onError={() => {
-            setErrorText(t('photoError'))
-            setStatus('error')
-          }}
-          disabled={status === 'loading'}
-        />
+        {user && (
+          <PhotoButton
+            onQuery={(query) => setSearchParams({ q: query, src: 'photo' })}
+            onError={() => {
+              setErrorText(t('photoError'))
+              setStatus('error')
+            }}
+            disabled={status === 'loading'}
+          />
+        )}
       </div>
 
       {status === 'loading' && (
@@ -95,7 +101,7 @@ export default function AppHome() {
       {status === 'done' && offers.length > 0 && (
         <div className="mt-8 flex flex-col gap-6">
           <p className="text-xs text-ink/50">
-            {t('resultsFor')}: {query}
+            {t('resultsFor')}: {q}
           </p>
           {blocked.length > 0 && (
             <p className="rounded-sharp border border-line px-3 py-2 text-xs text-ink/60">

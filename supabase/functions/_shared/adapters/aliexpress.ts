@@ -36,8 +36,11 @@ export function mapAliexpress(items: AliItem[]): Offer[] {
 }
 
 function digits(text: string): number {
-  const only = text.replace(/[^\d.]/g, '')
-  return only ? Number(only) : 0
+  // Review/sold counts are integers; strip everything non digit so a value like
+  // "1.2.3 sold" cannot become NaN and poison the sort.
+  const only = text.replace(/[^\d]/g, '')
+  const n = Number(only)
+  return Number.isFinite(n) ? n : 0
 }
 
 type AliRawItem = {

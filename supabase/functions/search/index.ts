@@ -73,7 +73,12 @@ Deno.serve(async (req: Request) => {
     const blockedMarketplaces: string[] = []
 
     const settled = await Promise.allSettled(
-      list.map((m) => fetchForMarketplace(admin, m.id, normalized)),
+      list.map((m) =>
+        withTimeout(
+          fetchForMarketplace(admin, m.id, normalized),
+          ADAPTER_TIMEOUT_MS,
+        ),
+      ),
     )
 
     const offers: Offer[] = []
@@ -135,8 +140,9 @@ async function fetchForMarketplace(
   const adapter = getAdapter(marketplaceId)
   if (!adapter) return []
 
-  // A throw here (including the timeout) marks this marketplace blocked.
-  const offers = await withTimeout(adapter.search(normalized), ADAPTER_TIMEOUT_MS)
+  // A throw here marks this marketplace blocked. The whole call (cache read,
+  // adapter, cache write) is time bounded by the caller's withTimeout.
+  const offers = await adapter.search(normalized)
 
   await admin.from('search_cache').upsert(
     {

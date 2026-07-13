@@ -1,3 +1,4 @@
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 import type { Lang } from '../_shared/types.ts'
 import { corsHeaders } from '../_shared/cors.ts'
 
@@ -29,6 +30,18 @@ Deno.serve(async (req: Request) => {
     return json({ error: 'vision_not_configured' }, 503)
   }
 
+  // Require a signed in user so this paid vision endpoint cannot be abused
+  // anonymously by anyone holding the public anon key.
+  const authHeader = req.headers.get('Authorization')
+  if (!authHeader) return json({ error: 'unauthorized' }, 401)
+  const userClient = createClient(
+    Deno.env.get('SUPABASE_URL') ?? '',
+    Deno.env.get('SUPABASE_ANON_KEY') ?? '',
+    { global: { headers: { Authorization: authHeader } } },
+  )
+  const { data: userData } = await userClient.auth.getUser()
+  if (!userData.user) return json({ error: 'unauthorized' }, 401)
+
   try {
     const body = (await req.json()) as {
       imageBase64?: string
@@ -37,6 +50,7 @@ Deno.serve(async (req: Request) => {
     }
     const image = body.imageBase64 ?? ''
     if (!image) return json({ error: 'no_image' }, 400)
+    if (image.length > 7_000_000) return json({ error: 'image_too_large' }, 413)
 
     const langName = LANG_NAMES[body.lang ?? 'ru'] ?? 'Russian'
     const mediaType = body.mediaType ?? 'image/jpeg'

@@ -61,3 +61,17 @@ Deno.test('tie on valueScore breaks by reviewCount desc', () => {
   // identical scores; sort is stable-ish, but reviewCount equal keeps order.
   assertEquals(res.length, 2)
 })
+
+Deno.test('price scores are per currency, not across currencies', () => {
+  const res = scoreOffers([
+    makeOffer({ id: 'kzt-cheap', price: 5000, currency: 'KZT' }),
+    makeOffer({ id: 'kzt-dear', price: 10000, currency: 'KZT' }),
+    makeOffer({ id: 'usd', price: 2, currency: 'USD' }),
+  ])
+  const kztCheap = res.find((o) => o.id === 'kzt-cheap')!
+  const kztDear = res.find((o) => o.id === 'kzt-dear')!
+  // Cheapest KZT gets priceScore 1 within KZT; the 2 USD item does not drag it
+  // down to ~0.0004 the way a shared cross-currency minimum would.
+  assertAlmostEquals(kztCheap.priceScore, 1)
+  assertAlmostEquals(kztDear.priceScore, 0.5)
+})

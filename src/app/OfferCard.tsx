@@ -3,6 +3,7 @@ import type { ScoredOffer } from '@/shared/types/offer'
 import { useI18n } from '@/shared/i18n/I18nProvider'
 import { MARKETPLACE_NAMES } from '@/shared/marketplaces'
 import { useFavorites } from '@/shared/favorites/FavoritesProvider'
+import { formatPrice, safeHttpUrl } from '@/shared/format'
 
 function Badge({ children }: { children: string }) {
   return (
@@ -25,17 +26,19 @@ export function OfferCard({
   isCheapest,
   onOpenDetail,
 }: OfferCardProps) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
   const { enabled, isFavorite, toggle } = useFavorites()
   const fav = isFavorite(offer.productUrl)
   const valueIndex = Math.round(offer.valueScore * 100)
-  const price = `${Math.round(offer.price).toLocaleString('ru-RU')} ${offer.currency}`
+  const price = formatPrice(offer.price, offer.currency, lang)
+  const href = safeHttpUrl(offer.productUrl)
+  const img = safeHttpUrl(offer.imageUrl)
 
   return (
     <div className="flex flex-col gap-3 rounded-sharp border border-line p-4 sm:flex-row sm:items-center sm:gap-4">
-      {offer.imageUrl && (
+      {img && (
         <img
-          src={offer.imageUrl}
+          src={img}
           alt=""
           width={64}
           height={64}
@@ -93,15 +96,17 @@ export function OfferCard({
             />
           </button>
         )}
-        <a
-          href={offer.productUrl}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-sharp border border-ink bg-paper px-4 text-sm font-medium text-ink transition-colors hover:bg-ink/5"
-        >
-          <ExternalLink size={14} strokeWidth={1.5} aria-hidden="true" />
-          {t('openOnMarketplace')}
-        </a>
+        {href && (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="inline-flex h-10 items-center justify-center gap-1.5 rounded-sharp border border-ink bg-paper px-4 text-sm font-medium text-ink transition-colors hover:bg-ink/5"
+          >
+            <ExternalLink size={14} strokeWidth={1.5} aria-hidden="true" />
+            {t('openOnMarketplace')}
+          </a>
+        )}
       </div>
     </div>
   )

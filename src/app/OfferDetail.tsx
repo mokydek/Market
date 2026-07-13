@@ -1,7 +1,9 @@
+import { useEffect, useRef } from 'react'
 import { X } from 'lucide-react'
 import type { ScoredOffer } from '@/shared/types/offer'
 import { useI18n } from '@/shared/i18n/I18nProvider'
 import { MARKETPLACE_NAMES } from '@/shared/marketplaces'
+import { formatPrice, safeHttpUrl } from '@/shared/format'
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
@@ -18,19 +20,46 @@ type OfferDetailProps = {
 }
 
 export function OfferDetail({ offer, onClose }: OfferDetailProps) {
-  const { t } = useI18n()
+  const { t, lang } = useI18n()
+  const panelRef = useRef<HTMLDivElement>(null)
   const valueIndex = Math.round(offer.valueScore * 100)
   const quality = Math.round(offer.qualityScore * 100)
   const priceScore = Math.round(offer.priceScore * 100)
-  const price = `${Math.round(offer.price).toLocaleString('ru-RU')} ${offer.currency}`
+  const price = formatPrice(offer.price, offer.currency, lang)
+  const href = safeHttpUrl(offer.productUrl)
+  const img = safeHttpUrl(offer.imageUrl)
+
+  // Dialog behavior: close on Escape, lock body scroll, move focus into the
+  // panel on open and restore it on close.
+  useEffect(() => {
+    const previouslyFocused = document.activeElement as HTMLElement | null
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') onClose()
+    }
+    document.addEventListener('keydown', onKey)
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    panelRef.current?.focus()
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = previousOverflow
+      previouslyFocused?.focus()
+    }
+  }, [onClose])
 
   return (
     <div
       className="fixed inset-0 z-50 flex justify-end bg-ink/20"
+      role="presentation"
       onClick={onClose}
     >
       <div
-        className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-paper p-6"
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="offer-detail-title"
+        tabIndex={-1}
+        className="flex h-full w-full max-w-md flex-col overflow-y-auto bg-paper p-6 outline-none"
         onClick={(event) => event.stopPropagation()}
       >
         <div className="flex items-start justify-between">
@@ -47,9 +76,9 @@ export function OfferDetail({ offer, onClose }: OfferDetailProps) {
           </button>
         </div>
 
-        {offer.imageUrl && (
+        {img && (
           <img
-            src={offer.imageUrl}
+            src={img}
             alt=""
             width={192}
             height={192}
@@ -57,7 +86,10 @@ export function OfferDetail({ offer, onClose }: OfferDetailProps) {
           />
         )}
 
-        <h2 className="mt-4 font-display text-lg font-semibold tracking-tight">
+        <h2
+          id="offer-detail-title"
+          className="mt-4 font-display text-lg font-semibold tracking-tight"
+        >
           {offer.title}
         </h2>
 
@@ -74,14 +106,16 @@ export function OfferDetail({ offer, onClose }: OfferDetailProps) {
 
         <p className="mt-4 text-xs text-ink/50">{t('scoreExplanation')}</p>
 
-        <a
-          href={offer.productUrl}
-          target="_blank"
-          rel="noreferrer noopener"
-          className="mt-6 inline-flex h-10 items-center justify-center rounded-sharp bg-ink px-5 text-sm font-medium text-paper transition-colors hover:bg-ink/85"
-        >
-          {t('openOnMarketplace')}
-        </a>
+        {href && (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="mt-6 inline-flex h-10 items-center justify-center rounded-sharp bg-ink px-5 text-sm font-medium text-paper transition-colors hover:bg-ink/85"
+          >
+            {t('openOnMarketplace')}
+          </a>
+        )}
       </div>
     </div>
   )

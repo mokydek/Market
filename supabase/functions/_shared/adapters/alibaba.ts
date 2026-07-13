@@ -28,7 +28,7 @@ function normalizeImage(image: string | null): string | null {
 
 export function mapAlibaba(items: AlibabaItem[]): Offer[] {
   return items
-    .filter((it) => Boolean(it.productId))
+    .filter((it) => Boolean(it.productId) && Boolean(it.url))
     .map((it) => ({
       id: `${MARKETPLACE_ID}-${it.productId}`,
       marketplaceId: MARKETPLACE_ID,

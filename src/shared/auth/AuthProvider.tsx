@@ -29,12 +29,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    void supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      setLoading(false)
-    })
+    // onAuthStateChange is authoritative; the initial getSession only fills the
+    // first paint and must not overwrite a newer event or hang on rejection.
+    let settled = false
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (!settled) {
+          setSession(data.session)
+          setLoading(false)
+        }
+      })
+      .catch(() => {
+        if (!settled) setLoading(false)
+      })
 
     const { data } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+      settled = true
       setSession(nextSession)
       setLoading(false)
     })

@@ -63,9 +63,15 @@ export function FavoritesProvider({ children }: { children: ReactNode }) {
           .delete()
           .eq('user_id', user.id)
           .eq('offer->>productUrl', url)
-        if (error) setFavorites((f) => [...f, offer]) // revert on failure
+        if (error) {
+          setFavorites((f) =>
+            f.some((o) => o.productUrl === url) ? f : [...f, offer],
+          ) // revert on failure
+        }
       } else {
-        setFavorites((f) => [...f, offer]) // optimistic
+        setFavorites((f) =>
+          f.some((o) => o.productUrl === url) ? f : [...f, offer],
+        ) // optimistic, deduped
         const { error } = await supabase
           .from('favorites')
           .insert({ user_id: user.id, offer })

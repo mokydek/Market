@@ -17,7 +17,7 @@ export type KaspiItem = {
 
 export function mapKaspi(items: KaspiItem[]): Offer[] {
   return items
-    .filter((it) => Boolean(it.id))
+    .filter((it) => Boolean(it.id) && Boolean(it.link))
     .map((it) => ({
       id: `${MARKETPLACE_ID}-${it.id}`,
       marketplaceId: MARKETPLACE_ID,
