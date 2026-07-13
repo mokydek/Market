@@ -4,6 +4,7 @@ import { useI18n } from '@/shared/i18n/I18nProvider'
 import { supabase } from '@/shared/lib/supabase'
 import type { ScoredOffer } from '@/shared/types/offer'
 import { SearchBar } from '@/app/SearchBar'
+import { PhotoButton } from '@/app/PhotoButton'
 import { OfferCard } from '@/app/OfferCard'
 import { OfferDetail } from '@/app/OfferDetail'
 import { Spinner } from '@/shared/components/Spinner'
@@ -17,18 +18,20 @@ export default function AppHome() {
 
   const [status, setStatus] = useState<Status>('idle')
   const [query, setQuery] = useState('')
+  const [errorText, setErrorText] = useState('')
   const [offers, setOffers] = useState<ScoredOffer[]>([])
   const [blocked, setBlocked] = useState<string[]>([])
   const [selected, setSelected] = useState<ScoredOffer | null>(null)
 
   const runSearch = useCallback(
-    async (nextQuery: string) => {
+    async (nextQuery: string, source: 'text' | 'photo' = 'text') => {
       setStatus('loading')
       setQuery(nextQuery)
       const { data, error } = await supabase.functions.invoke('search', {
-        body: { query: nextQuery, lang },
+        body: { query: nextQuery, lang, source },
       })
       if (error || !data) {
+        setErrorText(t('errorGeneric'))
         setStatus('error')
         return
       }
@@ -40,7 +43,7 @@ export default function AppHome() {
       setBlocked(payload.blockedMarketplaces ?? [])
       setStatus('done')
     },
-    [lang],
+    [lang, t],
   )
 
   // Rerun a search arriving from history (/app?q=...).
@@ -55,12 +58,24 @@ export default function AppHome() {
 
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col px-6 py-10">
-      <SearchBar
-        key={initialQuery}
-        initialValue={initialQuery}
-        onSearch={runSearch}
-        disabled={status === 'loading'}
-      />
+      <div className="flex items-center gap-2">
+        <div className="flex-1">
+          <SearchBar
+            key={initialQuery}
+            initialValue={initialQuery}
+            onSearch={runSearch}
+            disabled={status === 'loading'}
+          />
+        </div>
+        <PhotoButton
+          onQuery={(q) => void runSearch(q, 'photo')}
+          onError={() => {
+            setErrorText(t('photoError'))
+            setStatus('error')
+          }}
+          disabled={status === 'loading'}
+        />
+      </div>
 
       {status === 'loading' && (
         <div className="mt-16 flex flex-col items-center gap-3">
@@ -70,9 +85,7 @@ export default function AppHome() {
       )}
 
       {status === 'error' && (
-        <p className="mt-16 text-center text-sm text-ink/60">
-          {t('errorGeneric')}
-        </p>
+        <p className="mt-16 text-center text-sm text-ink/60">{errorText}</p>
       )}
 
       {status === 'done' && offers.length === 0 && (

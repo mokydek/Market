@@ -41,7 +41,12 @@ Deno.serve(async (req: Request) => {
   const anonKey = Deno.env.get('SUPABASE_ANON_KEY') ?? ''
 
   try {
-    const body = (await req.json()) as { query?: string; lang?: Lang }
+    const body = (await req.json()) as {
+      query?: string
+      lang?: Lang
+      source?: string
+    }
+    const source = body.source === 'photo' ? 'photo' : 'text'
     const normalized = (body.query ?? '')
       .trim()
       .toLowerCase()
@@ -93,7 +98,7 @@ Deno.serve(async (req: Request) => {
         await userClient.from('searches').insert({
           user_id: userData.user.id,
           query: normalized,
-          source: 'text',
+          source,
         })
       }
     }
