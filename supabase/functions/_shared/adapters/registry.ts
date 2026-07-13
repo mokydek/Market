@@ -1,11 +1,12 @@
 import type { Adapter } from './types.ts'
 import { createMockAdapter } from './mock.ts'
+import { wildberriesAdapter } from './wildberries.ts'
 
 // Marketplace id to adapter. Real adapters replace the mock entries in the
-// phases that follow; until then every marketplace serves deterministic mock
-// data so the whole app is demoable end to end.
+// phases that follow; marketplaces without a real adapter yet serve
+// deterministic mock data so the whole app stays demoable end to end.
 const registry: Record<string, Adapter> = {
-  wildberries: createMockAdapter('wildberries', false),
+  wildberries: wildberriesAdapter,
   ozon: createMockAdapter('ozon', false),
   aliexpress: createMockAdapter('aliexpress', false),
   alibaba: createMockAdapter('alibaba', true),
