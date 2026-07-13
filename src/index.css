@@ -1,0 +1,26 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-ink: #000000;
+  --color-paper: #ffffff;
+  --color-line: #e5e5e5;
+
+  --radius-sharp: 2px;
+
+  --font-display: 'Rubik Variable', system-ui, sans-serif;
+  --font-sans: 'Inter Variable', system-ui, sans-serif;
+}
+
+:root {
+  color-scheme: light only;
+}
+
+html,
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+body {
+  font-family: var(--font-sans);
+}
