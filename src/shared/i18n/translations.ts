@@ -69,6 +69,16 @@ const ru = {
   authUserExists: 'Пользователь с такой почтой уже существует',
   authWeakPassword: 'Пароль слишком короткий. Минимум шесть символов',
   authInvalidEmail: 'Введите корректную почту',
+
+  // Detail and account pages
+  scoreExplanation: 'Индекс выгоды учитывает цену и качество. Чем выше значение, тем выгоднее предложение',
+  qualityLabel: 'Качество',
+  priceScoreLabel: 'Выгодность цены',
+  historyEmpty: 'Здесь появятся ваши прошлые запросы',
+  favoritesEmpty: 'Здесь появятся сохраненные товары',
+  close: 'Закрыть',
+  photoError: 'Не удалось распознать изображение',
+  notFound: 'Страница не найдена',
 } as const
 
 export type TranslationKey = keyof typeof ru
@@ -123,6 +133,14 @@ export const translations = {
     authUserExists: 'A user with this email already exists',
     authWeakPassword: 'Password is too short. Use at least six characters',
     authInvalidEmail: 'Enter a valid email',
+    scoreExplanation: 'The value index combines price and quality. The higher it is, the better the deal',
+    qualityLabel: 'Quality',
+    priceScoreLabel: 'Price value',
+    historyEmpty: 'Your past searches will appear here',
+    favoritesEmpty: 'Your saved products will appear here',
+    close: 'Close',
+    photoError: 'Could not read the image',
+    notFound: 'Page not found',
   },
   kk: {
     appName: 'Market',
@@ -172,5 +190,13 @@ export const translations = {
     authUserExists: 'Мұндай поштасы бар қолданушы бұрыннан бар',
     authWeakPassword: 'Құпия сөз тым қысқа. Кемінде алты таңба',
     authInvalidEmail: 'Жарамды пошта енгізіңіз',
+    scoreExplanation: 'Тиімділік индексі баға мен сапаны ескереді. Мәні жоғары болса, ұсыныс тиімдірек',
+    qualityLabel: 'Сапа',
+    priceScoreLabel: 'Баға тиімділігі',
+    historyEmpty: 'Мұнда өткен сұраныстарыңыз көрсетіледі',
+    favoritesEmpty: 'Мұнда сақталған тауарлар көрсетіледі',
+    close: 'Жабу',
+    photoError: 'Суретті тану мүмкін болмады',
+    notFound: 'Бет табылмады',
   },
 } satisfies Record<Lang, Record<TranslationKey, string>>

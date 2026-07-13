@@ -25,6 +25,18 @@ export default function AppShell() {
           {user ? (
             <>
               <Link
+                to="/app/favorites"
+                className="hidden text-sm text-ink/60 transition-colors hover:text-ink sm:inline"
+              >
+                {t('favorites')}
+              </Link>
+              <Link
+                to="/app/history"
+                className="hidden text-sm text-ink/60 transition-colors hover:text-ink sm:inline"
+              >
+                {t('history')}
+              </Link>
+              <Link
                 to="/app/profile"
                 className="text-sm text-ink/60 transition-colors hover:text-ink"
               >

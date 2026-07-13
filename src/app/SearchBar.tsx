@@ -8,11 +8,12 @@ import { Button } from '@/shared/components/Button'
 type SearchBarProps = {
   onSearch: (query: string) => void
   disabled?: boolean
+  initialValue?: string
 }
 
-export function SearchBar({ onSearch, disabled }: SearchBarProps) {
+export function SearchBar({ onSearch, disabled, initialValue = '' }: SearchBarProps) {
   const { t } = useI18n()
-  const [value, setValue] = useState('')
+  const [value, setValue] = useState(initialValue)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()

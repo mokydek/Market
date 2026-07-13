@@ -1,7 +1,8 @@
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, Heart } from 'lucide-react'
 import type { ScoredOffer } from '@/shared/types/offer'
 import { useI18n } from '@/shared/i18n/I18nProvider'
 import { MARKETPLACE_NAMES } from '@/shared/marketplaces'
+import { useFavorites } from '@/shared/favorites/FavoritesProvider'
 
 function Badge({ children }: { children: string }) {
   return (
@@ -15,10 +16,18 @@ type OfferCardProps = {
   offer: ScoredOffer
   isBestValue: boolean
   isCheapest: boolean
+  onOpenDetail: (offer: ScoredOffer) => void
 }
 
-export function OfferCard({ offer, isBestValue, isCheapest }: OfferCardProps) {
+export function OfferCard({
+  offer,
+  isBestValue,
+  isCheapest,
+  onOpenDetail,
+}: OfferCardProps) {
   const { t } = useI18n()
+  const { enabled, isFavorite, toggle } = useFavorites()
+  const fav = isFavorite(offer.productUrl)
   const valueIndex = Math.round(offer.valueScore * 100)
   const price = `${Math.round(offer.price).toLocaleString('ru-RU')} ${offer.currency}`
 
@@ -40,7 +49,13 @@ export function OfferCard({ offer, isBestValue, isCheapest }: OfferCardProps) {
           {isCheapest && <Badge>{t('cheapest')}</Badge>}
           {offer.isB2B && <Badge>{t('b2bBadge')}</Badge>}
         </div>
-        <p className="mt-1.5 truncate text-sm font-medium text-ink">{offer.title}</p>
+        <button
+          type="button"
+          onClick={() => onOpenDetail(offer)}
+          className="mt-1.5 block max-w-full truncate text-left text-sm font-medium text-ink underline-offset-4 hover:underline"
+        >
+          {offer.title}
+        </button>
         <p className="text-xs text-ink/50">
           {MARKETPLACE_NAMES[offer.marketplaceId] ?? offer.marketplaceId}
         </p>
@@ -61,15 +76,33 @@ export function OfferCard({ offer, isBestValue, isCheapest }: OfferCardProps) {
           </span>
         </div>
       </div>
-      <a
-        href={offer.productUrl}
-        target="_blank"
-        rel="noreferrer noopener"
-        className="inline-flex h-10 shrink-0 items-center justify-center gap-1.5 rounded-sharp border border-ink bg-paper px-4 text-sm font-medium text-ink transition-colors hover:bg-ink/5"
-      >
-        <ExternalLink size={14} strokeWidth={1.5} aria-hidden="true" />
-        {t('openOnMarketplace')}
-      </a>
+      <div className="flex shrink-0 items-center gap-2">
+        {enabled && (
+          <button
+            type="button"
+            onClick={() => void toggle(offer)}
+            aria-label={fav ? t('removeFavorite') : t('addFavorite')}
+            aria-pressed={fav}
+            className="flex h-10 w-10 items-center justify-center rounded-sharp border border-line text-ink transition-colors hover:bg-ink/5"
+          >
+            <Heart
+              size={18}
+              strokeWidth={1.5}
+              fill={fav ? 'currentColor' : 'none'}
+              aria-hidden="true"
+            />
+          </button>
+        )}
+        <a
+          href={offer.productUrl}
+          target="_blank"
+          rel="noreferrer noopener"
+          className="inline-flex h-10 items-center justify-center gap-1.5 rounded-sharp border border-ink bg-paper px-4 text-sm font-medium text-ink transition-colors hover:bg-ink/5"
+        >
+          <ExternalLink size={14} strokeWidth={1.5} aria-hidden="true" />
+          {t('openOnMarketplace')}
+        </a>
+      </div>
     </div>
   )
 }

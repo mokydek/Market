@@ -10,6 +10,8 @@ const AppHome = lazy(() => import('@/app/AppHome'))
 const SignIn = lazy(() => import('@/app/SignIn'))
 const SignUp = lazy(() => import('@/app/SignUp'))
 const Profile = lazy(() => import('@/app/Profile'))
+const History = lazy(() => import('@/app/History'))
+const Favorites = lazy(() => import('@/app/Favorites'))
 
 function RouteFallback() {
   return (
@@ -35,6 +37,22 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Profile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="history"
+              element={
+                <ProtectedRoute>
+                  <History />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="favorites"
+              element={
+                <ProtectedRoute>
+                  <Favorites />
                 </ProtectedRoute>
               }
             />
