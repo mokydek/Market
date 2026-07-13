@@ -5,13 +5,16 @@ import '@fontsource-variable/inter'
 import './index.css'
 import App from './App.tsx'
 import { I18nProvider } from '@/shared/i18n/I18nProvider'
+import { AuthProvider } from '@/shared/auth/AuthProvider'
 import { ErrorBoundary } from '@/shared/components/ErrorBoundary'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <I18nProvider>
       <ErrorBoundary>
-        <App />
+        <AuthProvider>
+          <App />
+        </AuthProvider>
       </ErrorBoundary>
     </I18nProvider>
   </StrictMode>,

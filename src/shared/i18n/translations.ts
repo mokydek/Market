@@ -60,6 +60,14 @@ const ru = {
   feature3Title: 'Рейтинг по выгоде',
   feature3Text: 'Оценка по цене и качеству',
   footerNote: 'Поиск лучших товаров на маркетплейсах',
+
+  // Auth extras
+  displayName: 'Имя',
+  checkEmail: 'Мы отправили письмо для подтверждения. Проверьте почту',
+  authInvalidCredentials: 'Неверная почта или пароль',
+  authUserExists: 'Пользователь с такой почтой уже существует',
+  authWeakPassword: 'Пароль слишком короткий. Минимум шесть символов',
+  authInvalidEmail: 'Введите корректную почту',
 } as const
 
 export type TranslationKey = keyof typeof ru
@@ -107,6 +115,12 @@ export const translations = {
     feature3Title: 'Ranked by value',
     feature3Text: 'Scored by price and quality',
     footerNote: 'Find the best products across marketplaces',
+    displayName: 'Name',
+    checkEmail: 'We sent a confirmation email. Please check your inbox',
+    authInvalidCredentials: 'Invalid email or password',
+    authUserExists: 'A user with this email already exists',
+    authWeakPassword: 'Password is too short. Use at least six characters',
+    authInvalidEmail: 'Enter a valid email',
   },
   kk: {
     appName: 'Market',
@@ -149,5 +163,11 @@ export const translations = {
     feature3Title: 'Тиімділік бойынша рейтинг',
     feature3Text: 'Баға мен сапа бойынша бағалау',
     footerNote: 'Маркетплейстердегі үздік тауарларды табу',
+    displayName: 'Аты',
+    checkEmail: 'Растау хаты жіберілді. Поштаңызды тексеріңіз',
+    authInvalidCredentials: 'Пошта немесе құпия сөз қате',
+    authUserExists: 'Мұндай поштасы бар қолданушы бұрыннан бар',
+    authWeakPassword: 'Құпия сөз тым қысқа. Кемінде алты таңба',
+    authInvalidEmail: 'Жарамды пошта енгізіңіз',
   },
 } satisfies Record<Lang, Record<TranslationKey, string>>
