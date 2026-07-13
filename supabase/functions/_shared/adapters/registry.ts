@@ -2,6 +2,8 @@ import type { Adapter } from './types.ts'
 import { createMockAdapter } from './mock.ts'
 import { wildberriesAdapter } from './wildberries.ts'
 import { ozonAdapter } from './ozon.ts'
+import { aliexpressAdapter } from './aliexpress.ts'
+import { alibabaAdapter } from './alibaba.ts'
 
 // Marketplace id to adapter. Real adapters replace the mock entries in the
 // phases that follow; marketplaces without a real adapter yet serve
@@ -9,8 +11,8 @@ import { ozonAdapter } from './ozon.ts'
 const registry: Record<string, Adapter> = {
   wildberries: wildberriesAdapter,
   ozon: ozonAdapter,
-  aliexpress: createMockAdapter('aliexpress', false),
-  alibaba: createMockAdapter('alibaba', true),
+  aliexpress: aliexpressAdapter,
+  alibaba: alibabaAdapter,
   kaspi: createMockAdapter('kaspi', false),
 }
 
